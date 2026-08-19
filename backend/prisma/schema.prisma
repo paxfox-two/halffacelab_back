@@ -1,0 +1,268 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AuthProvider {
+  LOCAL
+  KAKAO
+  GOOGLE
+  APPLE
+}
+
+enum ProductSource {
+  OFFICIAL
+  USER_OCR
+  USER_MANUAL
+}
+
+enum TrialStatus {
+  DRAFT
+  RUNNING
+  COMPLETED
+  ABANDONED
+}
+
+enum ArmRole {
+  TEST
+  CONTROL
+}
+
+enum Side {
+  LEFT
+  RIGHT
+}
+
+enum MeasurementStatus {
+  SUCCESS
+  RETAKEN
+  FAILED
+}
+
+enum QualityGrade {
+  GOOD
+  FAIR
+  POOR
+}
+
+enum MetricRegion {
+  CHEEK
+  FOREHEAD
+  CHIN
+  NOSE_SIDE
+}
+
+enum ReportStatus {
+  QUEUED
+  RUNNING
+  DONE
+  FAILED
+}
+
+enum Verdict {
+  NO_DIFFERENCE
+  SIGNIFICANT
+  INSUFFICIENT_DATA
+}
+
+model User {
+  id              BigInt       @id @default(autoincrement())
+  email           String?      @unique
+  passwordHash    String?      @map("password_hash")
+  provider        AuthProvider @default(LOCAL)
+  providerUid     String?      @map("provider_uid")
+  nickname        String?
+  researchConsent Boolean      @default(false) @map("research_consent")
+  createdAt       DateTime     @default(now()) @map("created_at")
+
+  products Product[]
+  trials   Trial[]
+
+  @@unique([provider, providerUid])
+  @@map("users")
+}
+
+model Metric {
+  id       Int     @id @default(autoincrement())
+  code     String  @unique
+  name     String
+  unit     String?
+  isActive Boolean @default(false) @map("is_active")
+
+  trials              Trial[]
+  measurementMetrics  MeasurementMetric[]
+  reportMetricResults ReportMetricResult[]
+
+  @@map("metrics")
+}
+
+model Product {
+  id              BigInt        @id @default(autoincrement())
+  brandName       String?       @map("brand_name")
+  name            String
+  category        String?
+  imageUrl        String?       @map("image_url")
+  source          ProductSource @default(OFFICIAL)
+  createdByUserId BigInt?       @map("created_by_user_id")
+  isVerified      Boolean       @default(false) @map("is_verified")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  createdBy User?      @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+  trialArms TrialArm[]
+
+  @@map("products")
+}
+
+model Trial {
+  id                   BigInt      @id @default(autoincrement())
+  userId               BigInt      @map("user_id")
+  title                String
+  primaryMetricId      Int         @map("primary_metric_id")
+  status               TrialStatus @default(DRAFT)
+  startDate            DateTime    @map("start_date") @db.Date
+  endDate              DateTime    @map("end_date") @db.Date
+  runInDays            Int         @default(7) @map("run_in_days")
+  randomizationSeed    String      @map("randomization_seed")
+  preferredCaptureTime DateTime?   @map("preferred_capture_time") @db.Time
+  timezone             String      @default("Asia/Seoul")
+  lockedAt             DateTime?   @map("locked_at")
+  completedAt          DateTime?   @map("completed_at")
+  createdAt            DateTime    @default(now()) @map("created_at")
+  updatedAt            DateTime    @updatedAt @map("updated_at")
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  primaryMetric Metric        @relation(fields: [primaryMetricId], references: [id])
+  arms          TrialArm[]
+  measurements  Measurement[]
+  dailyReports  DailyReport[]
+  trialReport   TrialReport?
+
+  @@index([userId, createdAt(sort: Desc)], map: "idx_trials_user")
+  @@map("trials")
+}
+
+model TrialArm {
+  id        BigInt  @id @default(autoincrement())
+  trialId   BigInt  @map("trial_id")
+  productId BigInt? @map("product_id")
+  role      ArmRole
+  side      Side
+
+  trial   Trial    @relation(fields: [trialId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id])
+
+  @@unique([trialId, role])
+  @@unique([trialId, side])
+  @@map("trial_arms")
+}
+
+model Measurement {
+  id                BigInt             @id @default(autoincrement())
+  trialId           BigInt             @map("trial_id")
+  dayIndex          Int                @map("day_index")
+  capturedAt        DateTime           @map("captured_at")
+  status            MeasurementStatus  @default(SUCCESS)
+  qualityGrade      QualityGrade?      @map("quality_grade")
+  envSimilarityPrev Decimal?           @map("env_similarity_prev") @db.Decimal(5, 2)
+  rejectReason      String?            @map("reject_reason")
+  retakeOfId        BigInt?            @map("retake_of_id")
+  deviceModel       String?            @map("device_model")
+  ambientLux        Decimal?           @map("ambient_lux") @db.Decimal(8, 2)
+  whiteBalanceK     Int?               @map("white_balance_k")
+  exposureEv        Decimal?           @map("exposure_ev") @db.Decimal(5, 2)
+  faceYaw           Decimal?           @map("face_yaw") @db.Decimal(5, 2)
+  facePitch         Decimal?           @map("face_pitch") @db.Decimal(5, 2)
+  faceRoll          Decimal?           @map("face_roll") @db.Decimal(5, 2)
+  distanceMm        Int?               @map("distance_mm")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  trial        Trial               @relation(fields: [trialId], references: [id], onDelete: Cascade)
+  retakeOf     Measurement?        @relation("Retake", fields: [retakeOfId], references: [id])
+  retakes      Measurement[]       @relation("Retake")
+  metricValues MeasurementMetric[]
+  dailyReport  DailyReport?
+
+  @@index([trialId, capturedAt(sort: Desc)], map: "idx_measure_trial_time")
+  @@map("measurements")
+}
+
+model MeasurementMetric {
+  id            BigInt       @id @default(autoincrement())
+  measurementId BigInt       @map("measurement_id")
+  metricId      Int          @map("metric_id")
+  side          Side
+  region        MetricRegion @default(CHEEK)
+  labL          Decimal?     @map("lab_l") @db.Decimal(7, 3)
+  labA          Decimal?     @map("lab_a") @db.Decimal(7, 3)
+  labB          Decimal?     @map("lab_b") @db.Decimal(7, 3)
+  value         Decimal      @db.Decimal(9, 4)
+  samplePixels  Int?         @map("sample_pixels")
+
+  measurement Measurement @relation(fields: [measurementId], references: [id], onDelete: Cascade)
+  metric      Metric      @relation(fields: [metricId], references: [id])
+
+  @@unique([measurementId, metricId, side, region])
+  @@map("measurement_metrics")
+}
+
+model DailyReport {
+  id            BigInt   @id @default(autoincrement())
+  trialId       BigInt   @map("trial_id")
+  measurementId BigInt   @unique @map("measurement_id")
+  reportDate    DateTime @map("report_date") @db.Date
+  leftValue     Decimal? @map("left_value") @db.Decimal(9, 4)
+  rightValue    Decimal? @map("right_value") @db.Decimal(9, 4)
+  gap           Decimal? @db.Decimal(9, 4)
+  gapDeltaPrev  Decimal? @map("gap_delta_prev") @db.Decimal(9, 4)
+  summaryText   String?  @map("summary_text")
+  generatedAt   DateTime @default(now()) @map("generated_at")
+
+  trial       Trial       @relation(fields: [trialId], references: [id], onDelete: Cascade)
+  measurement Measurement @relation(fields: [measurementId], references: [id], onDelete: Cascade)
+
+  @@unique([trialId, reportDate])
+  @@map("daily_reports")
+}
+
+model TrialReport {
+  id           BigInt       @id @default(autoincrement())
+  trialId      BigInt       @unique @map("trial_id")
+  modelVersion String       @map("model_version")
+  status       ReportStatus @default(QUEUED)
+  headline     String?
+  shareToken   String?      @unique @map("share_token")
+  generatedAt  DateTime?    @map("generated_at")
+  errorMessage String?      @map("error_message")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  trial   Trial                @relation(fields: [trialId], references: [id], onDelete: Cascade)
+  results ReportMetricResult[]
+
+  @@map("trial_reports")
+}
+
+model ReportMetricResult {
+  id            BigInt   @id @default(autoincrement())
+  reportId      BigInt   @map("report_id")
+  metricId      Int      @map("metric_id")
+  verdict       Verdict
+  baselineGap   Decimal? @map("baseline_gap") @db.Decimal(9, 4)
+  effectMean    Decimal? @map("effect_mean") @db.Decimal(9, 4)
+  ciLow         Decimal? @map("ci_low") @db.Decimal(9, 4)
+  ciHigh        Decimal? @map("ci_high") @db.Decimal(9, 4)
+  probDirection Decimal? @map("prob_direction") @db.Decimal(5, 4)
+  nObservations Int?     @map("n_observations")
+  narrative     String?
+
+  report TrialReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  metric Metric      @relation(fields: [metricId], references: [id])
+
+  @@unique([reportId, metricId])
+  @@map("report_metric_results")
+}

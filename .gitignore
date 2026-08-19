@@ -1,0 +1,17 @@
+node_modules/
+dist/
+coverage/
+*.log
+.env
+.env.*.local
+
+# Windows/WSL "downloaded from the web" sidecar metadata — no content value
+*:Zone.Identifier
+
+# Local Claude Code tool permissions, machine-specific
+.claude/
+
+# Rootless local Postgres install used for development in sandboxes
+# without Docker/root access — large binaries, machine-specific, never
+# meant to be committed.
+.devdb/

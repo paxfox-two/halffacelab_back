@@ -1,0 +1,54 @@
+# Local/reference full-stack setup. Requires Docker (this sandbox doesn't
+# have it, so it was developed and verified against a rootless local
+# Postgres instead — see .devdb/README.md — but this file is what a
+# machine with Docker should use).
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-halfface}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-halfface_dev_pw}
+      POSTGRES_DB: ${POSTGRES_DB:-halfface_lab}
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-halfface}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot migration runner. Kept separate from `backend` so that scaling
+  # `backend` to multiple replicas never races multiple instances trying to
+  # run migrations at the same time.
+  migrate:
+    build: ./backend
+    command: ['npx', 'prisma', 'migrate', 'deploy']
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-halfface}:${POSTGRES_PASSWORD:-halfface_dev_pw}@postgres:5432/${POSTGRES_DB:-halfface_lab}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-halfface}:${POSTGRES_PASSWORD:-halfface_dev_pw}@postgres:5432/${POSTGRES_DB:-halfface_lab}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-in-production}
+      JWT_EXPIRES_IN: 1h
+      PORT: 3000
+      NODE_ENV: production
+    ports:
+      - '3000:3000'
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    # docker compose up --scale backend=3 works as-is: the app is
+    # stateless and each replica opens its own bounded Prisma pool.
+    # Put a reverse proxy / load balancer in front for real scale-out.
+
+volumes:
+  pgdata:

@@ -1,0 +1,349 @@
+erDiagram
+    %% ========== 1. 계정 / 인증 ==========
+    USERS ||--o{ SOCIAL_ACCOUNTS : "연동"
+    USERS ||--o{ DEVICES : "보유"
+    USERS ||--o{ USER_CONSENTS : "동의"
+    CONSENT_ITEMS ||--o{ USER_CONSENTS : "항목"
+    USERS ||--|| NOTIFICATION_SETTINGS : "설정"
+    USERS ||--o{ NOTIFICATIONS : "수신"
+
+    %% ========== 2. 구독 / 결제 ==========
+    PLANS ||--o{ SUBSCRIPTIONS : "적용"
+    PLANS ||--o{ PLAN_FEATURES : "권한"
+    USERS ||--o{ SUBSCRIPTIONS : "구독"
+    SUBSCRIPTIONS ||--o{ PAYMENTS : "결제"
+
+    %% ========== 3. 제품 마스터 ==========
+    BRANDS ||--o{ PRODUCTS : "보유"
+    PRODUCTS ||--o{ PRODUCT_INGREDIENTS : "성분"
+    INGREDIENTS ||--o{ PRODUCT_INGREDIENTS : "포함"
+    USERS ||--o{ PRODUCTS : "사용자등록"
+
+    %% ========== 4. 임상 설계 ==========
+    USERS ||--o{ TRIALS : "진행"
+    TRIALS ||--o{ TRIAL_ARMS : "구성"
+    PRODUCTS ||--o{ TRIAL_ARMS : "지정"
+    TRIALS ||--o{ TRIAL_PHASES : "단계"
+    TRIALS ||--o{ TRIAL_ASSIGNMENTS : "좌우배정"
+    TRIAL_ARMS ||--o{ TRIAL_ASSIGNMENTS : "배정"
+    TRIAL_PHASES ||--o{ TRIAL_ASSIGNMENTS : "적용구간"
+    TRIALS ||--o{ TRIAL_METRICS : "측정항목"
+    METRICS ||--o{ TRIAL_METRICS : "선택"
+
+    %% ========== 5. 측정 ==========
+    TRIALS ||--o{ MEASUREMENTS : "측정"
+    DEVICES ||--o{ MEASUREMENTS : "촬영기기"
+    MEASUREMENTS ||--|| CAPTURE_ENVIRONMENTS : "촬영환경"
+    MEASUREMENTS ||--o{ MEASUREMENT_REGION_METRICS : "지표값"
+    MEASUREMENTS ||--o| MEASUREMENT_IMAGES : "원본(선택동의)"
+    FACE_REGIONS ||--o{ MEASUREMENT_REGION_METRICS : "부위"
+    METRICS ||--o{ MEASUREMENT_REGION_METRICS : "지표"
+
+    %% ========== 6. 분석 / 리포트 ==========
+    MEASUREMENTS ||--o| DAILY_REPORTS : "일일리포트"
+    TRIALS ||--o{ DAILY_REPORTS : "누적"
+    TRIALS ||--o{ ANALYSIS_RUNS : "분석"
+    ANALYSIS_RUNS ||--o| TRIAL_REPORTS : "결과지"
+    TRIALS ||--o{ TRIAL_REPORTS : "보유"
+    TRIAL_REPORTS ||--o{ REPORT_METRIC_RESULTS : "지표별판정"
+    METRICS ||--o{ REPORT_METRIC_RESULTS : "대상"
+
+    %% ========== 7. 학습 / 고객지원 ==========
+    TUTORIALS ||--o{ TUTORIAL_PROGRESS : "진도"
+    USERS ||--o{ TUTORIAL_PROGRESS : "학습"
+    USERS ||--o{ INQUIRIES : "문의"
+    INQUIRIES ||--o{ INQUIRY_REPLIES : "답변"
+
+    %% ========== 8. RWE (B2B) ==========
+    PRODUCTS ||--o{ RWE_DATASETS : "대상제품"
+    RWE_DATASETS ||--o{ RWE_DATASET_ITEMS : "표본"
+    TRIALS ||--o{ RWE_DATASET_ITEMS : "익명제공"
+    BRAND_PARTNERS ||--o{ RWE_REPORTS : "구매"
+    RWE_DATASETS ||--o{ RWE_REPORTS : "기반"
+
+    USERS {
+        bigint id PK
+        varchar email UK "nullable(소셜전용)"
+        varchar password_hash "nullable"
+        varchar nickname
+        varchar status "ACTIVE|DORMANT|WITHDRAWN"
+        timestamptz created_at
+        timestamptz withdrawn_at
+    }
+    SOCIAL_ACCOUNTS {
+        bigint id PK
+        bigint user_id FK
+        varchar provider "KAKAO|GOOGLE|APPLE"
+        varchar provider_uid UK
+        timestamptz connected_at
+    }
+    DEVICES {
+        bigint id PK
+        bigint user_id FK
+        varchar platform "IOS|ANDROID"
+        varchar device_model "촬영 일관성 판정용"
+        varchar push_token
+        timestamptz last_seen_at
+    }
+    CONSENT_ITEMS {
+        int id PK
+        varchar code UK "FACE_IMAGE|CLINICAL_DATA|PRIVACY|RESEARCH|MARKETING"
+        boolean is_required
+        varchar version
+        timestamptz effective_from
+    }
+    USER_CONSENTS {
+        bigint id PK
+        bigint user_id FK
+        int consent_item_id FK
+        boolean agreed
+        timestamptz agreed_at
+        timestamptz revoked_at
+    }
+    NOTIFICATION_SETTINGS {
+        bigint user_id PK
+        boolean measure_alarm_enabled
+        time measure_alarm_time
+        boolean marketing_enabled
+        timestamptz marketing_agreed_at
+    }
+    NOTIFICATIONS {
+        bigint id PK
+        bigint user_id FK
+        varchar type "MEASURE|REPORT|MARKETING"
+        timestamptz scheduled_at
+        timestamptz sent_at
+        timestamptz read_at
+    }
+    PLANS {
+        int id PK
+        varchar code UK "FREE|MONTHLY|ANNUAL"
+        int price
+        varchar billing_period "NONE|P1M|P1Y"
+        boolean is_active
+    }
+    PLAN_FEATURES {
+        int id PK
+        int plan_id FK
+        varchar feature_code "MULTI_METRIC|DEEP_REPORT|PDF_EXPORT|NO_ADS|ARCHIVE"
+        int limit_value "NULL=무제한"
+    }
+    SUBSCRIPTIONS {
+        bigint id PK
+        bigint user_id FK
+        int plan_id FK
+        varchar status "ACTIVE|CANCELED|EXPIRED|GRACE"
+        boolean auto_renew
+        varchar store "APPSTORE|PLAY"
+        varchar store_subscription_id UK
+        timestamptz current_period_end
+    }
+    PAYMENTS {
+        bigint id PK
+        bigint subscription_id FK
+        int amount
+        varchar status "PAID|REFUNDED|FAILED"
+        varchar store_transaction_id UK
+        timestamptz paid_at
+    }
+    BRANDS {
+        bigint id PK
+        varchar name UK
+    }
+    PRODUCTS {
+        bigint id PK
+        bigint brand_id FK
+        varchar name
+        varchar category "TONER|CREAM|SERUM..."
+        varchar source "OFFICIAL|USER_OCR|USER_MANUAL"
+        bigint created_by_user_id FK
+        boolean is_verified
+    }
+    INGREDIENTS {
+        bigint id PK
+        varchar inci_name UK
+        varchar korean_name
+    }
+    PRODUCT_INGREDIENTS {
+        bigint product_id FK
+        bigint ingredient_id FK
+        int rank_no
+    }
+    METRICS {
+        int id PK
+        varchar code UK "REDNESS|BRIGHTNESS|WRINKLE|OIL|DRYNESS"
+        varchar name
+        boolean beta_available "베타=REDNESS만 true"
+    }
+    TRIALS {
+        bigint id PK
+        bigint user_id FK
+        varchar title "임상명(수정가능)"
+        varchar protocol_type "PARALLEL|CROSSOVER"
+        varchar status "DRAFT|RUNNING|COMPLETED|ABANDONED"
+        date start_date
+        date end_date
+        int run_in_days "기저 격차 측정(기본7)"
+        int crossover_day "NULL이면 미교차"
+        time preferred_capture_time
+        timestamptz locked_at "첫 측정 시 설계 잠금"
+    }
+    TRIAL_ARMS {
+        bigint id PK
+        bigint trial_id FK
+        bigint product_id FK
+        varchar role "TEST|CONTROL"
+    }
+    TRIAL_PHASES {
+        bigint id PK
+        bigint trial_id FK
+        int seq
+        varchar phase_type "RUN_IN|PHASE_1|PHASE_2"
+        date start_date
+        date end_date
+    }
+    TRIAL_ASSIGNMENTS {
+        bigint id PK
+        bigint trial_id FK
+        bigint phase_id FK
+        bigint arm_id FK
+        varchar side "LEFT|RIGHT"
+        varchar randomization_seed
+    }
+    TRIAL_METRICS {
+        bigint trial_id FK
+        int metric_id FK
+        boolean is_primary
+    }
+    MEASUREMENTS {
+        bigint id PK
+        bigint trial_id FK
+        bigint device_id FK
+        int day_index "임상 N일차"
+        timestamptz captured_at
+        varchar status "SUCCESS|RETAKEN|FAILED"
+        varchar quality_grade "GOOD|FAIR|POOR"
+        numeric env_similarity_prev "전날 대비 환경 유사도"
+        bigint retake_of_id FK
+    }
+    CAPTURE_ENVIRONMENTS {
+        bigint measurement_id PK
+        numeric ambient_lux
+        int white_balance_k
+        numeric exposure_ev
+        numeric face_yaw
+        numeric face_pitch
+        numeric face_roll
+        int distance_mm
+        boolean screen_light_on
+    }
+    FACE_REGIONS {
+        int id PK
+        varchar code UK "CHEEK|FOREHEAD|CHIN|NOSE"
+    }
+    MEASUREMENT_REGION_METRICS {
+        bigint id PK
+        bigint measurement_id FK
+        int region_id FK
+        int metric_id FK
+        varchar side "LEFT|RIGHT"
+        numeric lab_l
+        numeric lab_a
+        numeric lab_b
+        numeric value "지표 스코어"
+        int sample_pixels
+    }
+    MEASUREMENT_IMAGES {
+        bigint measurement_id PK
+        varchar storage_key "동의 시에만 생성"
+        varchar encryption "AES-256"
+        timestamptz uploaded_at
+        timestamptz deleted_at
+    }
+    DAILY_REPORTS {
+        bigint id PK
+        bigint trial_id FK
+        bigint measurement_id FK
+        date report_date
+        jsonb delta_json "좌우/전일 대비 변화량"
+        text summary_text
+    }
+    ANALYSIS_RUNS {
+        bigint id PK
+        bigint trial_id FK
+        varchar run_type "INTERIM_D5|INTERIM_D14|FINAL"
+        varchar model_version "베이지안 N-of-1"
+        varchar status "QUEUED|RUNNING|DONE|FAILED"
+        timestamptz finished_at
+    }
+    TRIAL_REPORTS {
+        bigint id PK
+        bigint trial_id FK
+        bigint analysis_run_id FK
+        varchar report_type "BASIC|DEEP"
+        boolean is_premium
+        varchar pdf_url
+        varchar share_token UK
+        timestamptz published_at
+    }
+    REPORT_METRIC_RESULTS {
+        bigint id PK
+        bigint report_id FK
+        int metric_id FK
+        varchar verdict "NO_DIFFERENCE|SIGNIFICANT"
+        numeric baseline_gap "런인 기저 좌우 격차"
+        numeric effect_mean
+        numeric ci_low "95% 신용구간"
+        numeric ci_high
+        numeric prob_direction
+        jsonb posterior_json
+    }
+    TUTORIALS {
+        int id PK
+        varchar type "CLINICAL|MEASUREMENT"
+        int step_no
+        varchar title
+    }
+    TUTORIAL_PROGRESS {
+        bigint user_id FK
+        int tutorial_id FK
+        timestamptz completed_at
+    }
+    INQUIRIES {
+        bigint id PK
+        bigint user_id FK
+        varchar category
+        varchar status "OPEN|ANSWERED|CLOSED"
+    }
+    INQUIRY_REPLIES {
+        bigint id PK
+        bigint inquiry_id FK
+        text body
+        timestamptz created_at
+    }
+    BRAND_PARTNERS {
+        bigint id PK
+        varchar name
+        varchar contact_email
+    }
+    RWE_DATASETS {
+        bigint id PK
+        bigint product_id FK
+        date period_start
+        date period_end
+        int sample_size "k-익명성 최소 표본 검증"
+        timestamptz generated_at
+    }
+    RWE_DATASET_ITEMS {
+        bigint id PK
+        bigint dataset_id FK
+        bigint trial_id FK "연구동의 임상만"
+        jsonb anonymized_vector
+    }
+    RWE_REPORTS {
+        bigint id PK
+        bigint partner_id FK
+        bigint dataset_id FK
+        int price
+        timestamptz delivered_at
+    }

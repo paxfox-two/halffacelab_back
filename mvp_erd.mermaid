@@ -1,0 +1,137 @@
+erDiagram
+    %% ===== 하프페이스랩 MVP ERD (10 tables) =====
+    USERS ||--o{ TRIALS : "진행"
+    USERS ||--o{ PRODUCTS : "직접등록"
+    PRODUCTS ||--o{ TRIAL_ARMS : "지정"
+    TRIALS ||--o{ TRIAL_ARMS : "좌우배정"
+    METRICS ||--o{ TRIALS : "주요항목"
+    TRIALS ||--o{ MEASUREMENTS : "측정"
+    MEASUREMENTS ||--o{ MEASUREMENT_METRICS : "지표값"
+    METRICS ||--o{ MEASUREMENT_METRICS : "지표"
+    MEASUREMENTS ||--o| DAILY_REPORTS : "일일리포트"
+    TRIALS ||--o{ DAILY_REPORTS : "누적"
+    TRIALS ||--o| TRIAL_REPORTS : "최종결과지"
+    TRIAL_REPORTS ||--o{ REPORT_METRIC_RESULTS : "지표별판정"
+    METRICS ||--o{ REPORT_METRIC_RESULTS : "대상"
+
+    USERS {
+        bigint id PK
+        varchar email UK "nullable(소셜전용)"
+        varchar password_hash "nullable"
+        varchar provider "LOCAL|KAKAO|GOOGLE|APPLE"
+        varchar provider_uid UK
+        varchar nickname
+        boolean research_consent "연구 활용 동의(선택)"
+        timestamptz created_at
+    }
+
+    PRODUCTS {
+        bigint id PK
+        varchar brand_name "MVP: 브랜드 테이블 미분리"
+        varchar name
+        varchar category
+        varchar source "OFFICIAL|USER_OCR|USER_MANUAL"
+        bigint created_by_user_id FK
+        boolean is_verified
+    }
+
+    METRICS {
+        int id PK
+        varchar code UK "REDNESS|BRIGHTNESS|WRINKLE"
+        varchar name
+        varchar unit
+        boolean is_active "MVP: REDNESS만 true"
+    }
+
+    TRIALS {
+        bigint id PK
+        bigint user_id FK
+        varchar title "임상명(수정가능)"
+        int primary_metric_id FK "MVP: 단일 항목"
+        varchar status "DRAFT|RUNNING|COMPLETED|ABANDONED"
+        date start_date
+        date end_date "최소 start+28일"
+        int run_in_days "기저 좌우 격차 구간(기본7)"
+        varchar randomization_seed "좌우 무작위 배정 근거"
+        time preferred_capture_time
+        varchar timezone "기본 Asia/Seoul"
+        timestamptz locked_at "첫 측정 시 설계 잠금"
+        timestamptz completed_at
+    }
+
+    TRIAL_ARMS {
+        bigint id PK
+        bigint trial_id FK
+        bigint product_id FK
+        varchar role "TEST|CONTROL"
+        varchar side "LEFT|RIGHT"
+    }
+
+    MEASUREMENTS {
+        bigint id PK
+        bigint trial_id FK
+        int day_index "임상 N일차"
+        timestamptz captured_at
+        varchar status "SUCCESS|RETAKEN|FAILED"
+        varchar quality_grade "GOOD|FAIR|POOR"
+        numeric env_similarity_prev "전날 대비 환경 유사도"
+        varchar reject_reason "SHADOW|ANGLE|LOW_LIGHT..."
+        bigint retake_of_id FK
+        varchar device_model "기기 변경 감지"
+        numeric ambient_lux "이하 촬영환경 (1:1 병합)"
+        int white_balance_k
+        numeric exposure_ev
+        numeric face_yaw
+        numeric face_pitch
+        numeric face_roll
+        int distance_mm
+    }
+
+    MEASUREMENT_METRICS {
+        bigint id PK
+        bigint measurement_id FK
+        int metric_id FK
+        varchar side "LEFT|RIGHT"
+        varchar region "CHEEK|FOREHEAD|CHIN|NOSE_SIDE"
+        numeric lab_l
+        numeric lab_a
+        numeric lab_b
+        numeric value "지표 스코어"
+        int sample_pixels
+    }
+
+    DAILY_REPORTS {
+        bigint id PK
+        bigint trial_id FK
+        bigint measurement_id FK UK
+        date report_date
+        numeric left_value
+        numeric right_value
+        numeric gap "좌-우 격차"
+        numeric gap_delta_prev "전일 대비 변화"
+        text summary_text "판정 아님, 추이만"
+    }
+
+    TRIAL_REPORTS {
+        bigint id PK
+        bigint trial_id FK UK
+        varchar model_version "베이지안 N-of-1"
+        varchar status "QUEUED|DONE|FAILED"
+        varchar headline
+        varchar share_token UK
+        timestamptz generated_at
+    }
+
+    REPORT_METRIC_RESULTS {
+        bigint id PK
+        bigint report_id FK
+        int metric_id FK
+        varchar verdict "NO_DIFFERENCE|SIGNIFICANT|INSUFFICIENT_DATA"
+        numeric baseline_gap "런인 기저 격차"
+        numeric effect_mean
+        numeric ci_low "95% 신용구간"
+        numeric ci_high
+        numeric prob_direction
+        int n_observations
+        text narrative "문장형 설명"
+    }
