@@ -51,7 +51,7 @@
   transform: translateX(-50%);
   width: 100%;
   max-width: var(--screen-max-width);
-  padding: 16px;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 10px;

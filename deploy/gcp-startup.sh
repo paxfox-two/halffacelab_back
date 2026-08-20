@@ -15,5 +15,9 @@ echo \
 apt-get update
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-# Let the default GCE user run docker without sudo.
-usermod -aG docker "$(getent passwd 1000 | cut -d: -f1)" || true
+# Let human login users run docker without sudo. Don't assume uid 1000 —
+# OS Login (the default on GCE) provisions the SSHing user at uid 1001+,
+# not the baked-in "ubuntu" account, so grant every real user account.
+for u in $(awk -F: '$3 >= 1000 && $3 < 60000 {print $1}' /etc/passwd); do
+  usermod -aG docker "$u" || true
+done

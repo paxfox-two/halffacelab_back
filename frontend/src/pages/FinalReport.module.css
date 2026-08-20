@@ -99,6 +99,6 @@
   transform: translateX(-50%);
   width: 100%;
   max-width: var(--screen-max-width);
-  padding: 16px;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
   background: linear-gradient(to top, var(--gs-10) 65%, transparent);
 }

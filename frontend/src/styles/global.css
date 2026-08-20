@@ -6,8 +6,7 @@
 }
 
 html,
-body,
-#root {
+body {
   height: 100%;
 }
 
@@ -19,6 +18,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* min-height (not height) so the card grows past one viewport instead of
+   clipping its own background — a page taller than the screen (e.g. the
+   long 테스트 설계 form) would otherwise overflow onto body's dark
+   background below the fold. */
 #root {
   max-width: var(--screen-max-width);
   margin: 0 auto;

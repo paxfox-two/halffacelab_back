@@ -20,6 +20,14 @@ export function formatMonthDay(iso: string): string {
   return `${d.getMonth() + 1}월 ${d.getDate()}일`;
 }
 
+// value is a plain "YYYY-MM-DD" from a <input type="date"> — append a time
+// so `new Date(...)` parses it in local time instead of UTC midnight
+// (which would roll back a day in negative-UTC-offset timezones).
+export function formatFullKoreanDate(value: string): string {
+  const d = new Date(value + 'T00:00:00');
+  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+}
+
 export function formatShortDate(iso: string): string {
   const d = new Date(iso);
   return `${String(d.getFullYear()).slice(2)}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;

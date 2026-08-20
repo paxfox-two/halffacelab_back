@@ -4,9 +4,8 @@ import type { Product } from '../lib/types';
 export type ProductSlot = 'test' | 'control';
 
 type SlotState = {
-  name: string;
-  linkedProduct: Product | null; // set when chosen via search; cleared once the user edits the name
-  photo: string | null; // data URL — supplementary only, OCR isn't implemented
+  linkedProduct: Product | null; // set via product search — the only way to fill a slot
+  photo: string | null; // data URL — supplementary reference only, OCR isn't implemented
 };
 
 type SetupState = {
@@ -19,7 +18,6 @@ type SetupState = {
 };
 
 type SetupContextValue = SetupState & {
-  setName: (slot: ProductSlot, name: string) => void;
   setProduct: (slot: ProductSlot, product: Product) => void;
   setPhoto: (slot: ProductSlot, dataUrl: string | null) => void;
   setField: <K extends keyof Omit<SetupState, 'test' | 'control'>>(key: K, value: SetupState[K]) => void;
@@ -34,7 +32,7 @@ function defaultDates() {
   return { startDate: fmt(start), endDate: fmt(end) };
 }
 
-const emptySlot = (): SlotState => ({ name: '', linkedProduct: null, photo: null });
+const emptySlot = (): SlotState => ({ linkedProduct: null, photo: null });
 
 function initialState(): SetupState {
   return {
@@ -51,18 +49,8 @@ const SetupContext = createContext<SetupContextValue | null>(null);
 export function SetupProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SetupState>(initialState);
 
-  const setName = (slot: ProductSlot, name: string) =>
-    setState((s) => ({ ...s, [slot]: { ...s[slot], name, linkedProduct: null } }));
-
   const setProduct = (slot: ProductSlot, product: Product) =>
-    setState((s) => ({
-      ...s,
-      [slot]: {
-        ...s[slot],
-        linkedProduct: product,
-        name: product.brandName ? `${product.brandName} · ${product.name}` : product.name,
-      },
-    }));
+    setState((s) => ({ ...s, [slot]: { ...s[slot], linkedProduct: product } }));
 
   const setPhoto = (slot: ProductSlot, dataUrl: string | null) =>
     setState((s) => ({ ...s, [slot]: { ...s[slot], photo: dataUrl } }));
@@ -72,7 +60,7 @@ export function SetupProvider({ children }: { children: ReactNode }) {
   const reset = () => setState(initialState());
 
   return (
-    <SetupContext.Provider value={{ ...state, setName, setProduct, setPhoto, setField, reset }}>
+    <SetupContext.Provider value={{ ...state, setProduct, setPhoto, setField, reset }}>
       {children}
     </SetupContext.Provider>
   );
