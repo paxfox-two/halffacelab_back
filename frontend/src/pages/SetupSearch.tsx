@@ -4,7 +4,7 @@ import styles from './SetupSearch.module.css';
 import { NavBar } from '../components/NavBar';
 import { TextInput } from '../components/TextInput';
 import { Button } from '../components/Button';
-import { ChevronRightIcon } from '../components/Icon';
+import { ChevronRightIcon, SearchIcon } from '../components/Icon';
 import { useSetup, type ProductSlot } from '../context/SetupContext';
 import { api } from '../lib/api';
 import type { Paginated, Product } from '../lib/types';
@@ -42,7 +42,13 @@ export function SetupSearch() {
     <div>
       <NavBar title="제품 검색" />
       <div className={styles.body}>
-        <TextInput placeholder="검색" value={query} onChange={(e) => setQuery(e.target.value)} autoFocus />
+        <TextInput
+          placeholder="검색"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          autoFocus
+          icon={<SearchIcon size={18} />}
+        />
         <div className={styles.list}>
           {!loading && results.length === 0 && <div className={styles.empty}>검색 결과가 없습니다.</div>}
           {results.map((p) => (

@@ -5,6 +5,11 @@
   gap: 20px;
 }
 
+.metricTabs {
+  display: flex;
+  gap: 8px;
+}
+
 .qualityCard {
   background: var(--gs-00);
   border-radius: 6px;

@@ -5,7 +5,8 @@ import { NavBar } from '../components/NavBar';
 import { Button } from '../components/Button';
 import { ReportHero } from '../components/ReportHero';
 import { SkinChangeReport } from '../components/SkinChangeReport';
-import { LightIcon } from '../components/Icon';
+import { LightIcon, FlaskIcon, CameraIcon } from '../components/Icon';
+import { Tag } from '../components/Tag';
 import { api } from '../lib/api';
 import { formatShortDate } from '../lib/date';
 import type { DailyReport, Measurement, Paginated, Trial, TrialReport } from '../lib/types';
@@ -63,9 +64,11 @@ export function FinalReport() {
       <NavBar title="최종 리포트" />
       <div className={styles.body}>
         <ReportHero
-          eyebrow={trial.title}
-          title={testArm?.product?.name ?? '측정 제품'}
+          eyebrow=""
+          title={trial.title}
+          subtitle={testArm?.product?.name ?? '측정 제품'}
           desc={['제품을 사용한 나의 피부에는', '어떤 변화가 있었을까요?']}
+          icon={<FlaskIcon size={44} />}
         />
 
         <div className={styles.qualityCard}>
@@ -82,6 +85,7 @@ export function FinalReport() {
           </div>
           <div className={styles.qualityRow}>
             <div className={styles.qualityLeft}>
+              <CameraIcon size={20} />
               <span>표본 수량</span>
             </div>
             <div className={styles.qualityRight} style={{ color: 'var(--g-10)' }}>
@@ -93,14 +97,27 @@ export function FinalReport() {
         </div>
 
         {reports.length > 0 && (
-          <SkinChangeReport
-            trial={trial}
-            reports={reports}
-            currentIndex={reports.length - 1}
-            eyebrow={`${formatShortDate(trial.startDate)} ~ ${formatShortDate(trial.endDate)}`}
-            heroTitle=""
-            changeVsLabel="첫 측정 대비 변화율"
-          />
+          <>
+            <div className={styles.metricTabs}>
+              <Tag variant="secondary" size="small">
+                홍조
+              </Tag>
+              <Tag variant="disabled" size="small">
+                미백
+              </Tag>
+              <Tag variant="disabled" size="small">
+                잡티
+              </Tag>
+            </div>
+            <SkinChangeReport
+              trial={trial}
+              reports={reports}
+              currentIndex={reports.length - 1}
+              eyebrow={`${formatShortDate(trial.startDate)} ~ ${formatShortDate(trial.endDate)}`}
+              heroTitle=""
+              changeVsLabel="첫 측정 대비 변화율"
+            />
+          </>
         )}
 
         <div className={styles.summaryCard}>

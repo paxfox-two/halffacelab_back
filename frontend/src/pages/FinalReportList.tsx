@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './FinalReportList.module.css';
 import { NavBar } from '../components/NavBar';
 import { TextInput } from '../components/TextInput';
-import { ChevronRightIcon } from '../components/Icon';
+import { ChevronRightIcon, SearchIcon } from '../components/Icon';
 import { api } from '../lib/api';
 import { formatShortDate } from '../lib/date';
 import type { Paginated, Trial } from '../lib/types';
@@ -30,7 +30,7 @@ export function FinalReportList() {
     <div>
       <NavBar title="최종 리포트" />
       <div className={styles.body}>
-        <TextInput placeholder="검색" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <TextInput placeholder="검색" value={query} onChange={(e) => setQuery(e.target.value)} icon={<SearchIcon size={18} />} />
         {!trials ? (
           <div>불러오는 중...</div>
         ) : filtered.length === 0 ? (

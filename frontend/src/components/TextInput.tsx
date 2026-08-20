@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes, ReactNode } from 'react';
 import styles from './TextInput.module.css';
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
@@ -6,11 +6,12 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   required?: boolean;
   help?: string;
   error?: string;
+  icon?: ReactNode;
 };
 
-export function TextInput({ label, required, help, error, className, value, ...rest }: Props) {
+export function TextInput({ label, required, help, error, icon, className, value, ...rest }: Props) {
   const filled = typeof value === 'string' && value.length > 0;
-  const cls = [styles.input, filled ? styles.filled : '', error ? styles.error : '', className]
+  const cls = [styles.input, icon ? styles.hasIcon : '', filled ? styles.filled : '', error ? styles.error : '', className]
     .filter(Boolean)
     .join(' ');
   return (
@@ -22,7 +23,10 @@ export function TextInput({ label, required, help, error, className, value, ...r
         </div>
       )}
       {help && <div className={styles.help}>{help}</div>}
-      <input className={cls} value={value} {...rest} />
+      <div className={styles.inputRow}>
+        <input className={cls} value={value} {...rest} />
+        {icon && <span className={styles.icon}>{icon}</span>}
+      </div>
       {error && <div className={styles.errorText}>{error}</div>}
     </div>
   );

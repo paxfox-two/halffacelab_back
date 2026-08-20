@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './DailyReportList.module.css';
 import { NavBar } from '../components/NavBar';
 import { TextInput } from '../components/TextInput';
-import { Tag } from '../components/Tag';
-import { ChevronRightIcon } from '../components/Icon';
+import { ChevronRightIcon, CalendarIcon } from '../components/Icon';
 import { useTrial } from '../context/TrialContext';
 import { api } from '../lib/api';
 import { formatShortDate } from '../lib/date';
@@ -55,7 +54,12 @@ export function DailyReportList() {
     <div>
       <NavBar title="일일 리포트" />
       <div className={styles.body}>
-        <TextInput placeholder="날짜로 검색 (예: 26/08/03)" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <TextInput
+          placeholder="날짜로 검색 (예: 26/08/03)"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          icon={<CalendarIcon size={18} />}
+        />
         {!reports ? (
           <div>불러오는 중...</div>
         ) : groups.length === 0 ? (
@@ -69,11 +73,7 @@ export function DailyReportList() {
                   <button className={styles.row} key={r.id} onClick={() => navigate(`/reports/daily/${r.measurementId}`)}>
                     <span className={styles.rowTitle}>{formatShortDate(r.reportDate)} 일일 리포트</span>
                     <div className={styles.rowRight}>
-                      {isToday(r.reportDate) && (
-                        <Tag variant="secondary" size="small">
-                          TODAY
-                        </Tag>
-                      )}
+                      {isToday(r.reportDate) && <span className={styles.todayTag}>TODAY</span>}
                       <ChevronRightIcon color="var(--k-30)" />
                     </div>
                   </button>

@@ -43,6 +43,18 @@
   gap: 8px;
 }
 
+.todayTag {
+  background: var(--k-30);
+  color: var(--gs-00);
+  font-size: var(--fs-b3);
+  font-weight: var(--fw-medium);
+  border-radius: var(--radius-pill);
+  padding: 8px 12px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+}
+
 .empty {
   color: var(--gs-40);
   text-align: center;

@@ -11,25 +11,6 @@
   gap: 6px;
 }
 
-.logoMark {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  overflow: hidden;
-  display: flex;
-  flex-shrink: 0;
-  box-shadow: var(--shadow-card);
-}
-.logoMark span {
-  flex: 1;
-}
-.logoMark span:first-child {
-  background: var(--k-40);
-}
-.logoMark span:last-child {
-  background: var(--gs-00);
-}
-
 .bubble {
   background: var(--gs-00);
   border-radius: 20px 20px 20px 0;

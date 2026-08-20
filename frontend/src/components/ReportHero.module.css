@@ -27,6 +27,13 @@
   font-size: var(--fs-h2);
 }
 
+.subtitle {
+  color: var(--k-40);
+  font-size: var(--fs-h6);
+  font-weight: var(--fw-medium);
+  margin-top: 2px;
+}
+
 .desc {
   color: var(--gs-70);
   font-size: var(--fs-h6);
@@ -34,19 +41,13 @@
 }
 
 .mark {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
+  width: 84px;
+  height: 84px;
+  border-radius: 20px;
   flex-shrink: 0;
   display: flex;
-  overflow: hidden;
-  box-shadow: 0 4px 16px rgba(46, 25, 89, 0.25);
-}
-.mark span:first-child {
-  flex: 1;
-  background: var(--k-40);
-}
-.mark span:last-child {
-  flex: 1;
-  background: var(--gs-00);
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 4px 16px rgba(46, 25, 89, 0.15);
 }

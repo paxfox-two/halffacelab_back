@@ -4,7 +4,8 @@ import styles from './Home.module.css';
 import { useTrial } from '../context/TrialContext';
 import { api } from '../lib/api';
 import { Button } from '../components/Button';
-import { ChevronRightIcon } from '../components/Icon';
+import { ChevronRightIcon, ClipboardChartIcon, QuestionBubbleIcon, FlaskIcon } from '../components/Icon';
+import { LogoMark } from '../components/LogoMark';
 import type { Measurement, Paginated } from '../lib/types';
 import { dayIndexFor } from '../lib/date';
 
@@ -53,10 +54,7 @@ export function Home() {
   return (
     <div className={styles.page}>
       <div className={styles.greeting}>
-        <div className={styles.logoMark} aria-hidden>
-          <span />
-          <span />
-        </div>
+        <LogoMark size={48} />
         <div className={styles.bubble}>
           {running ? (measuredToday ? '오늘 측정 완료했어요!' : '잘하고 있어요!') : '반가워요!'}
         </div>
@@ -115,7 +113,9 @@ export function Home() {
       <div className={styles.navCards}>
         <button className={styles.navCard} onClick={() => navigate('/reports/daily')} disabled={!running}>
           <div className={styles.navIconRow}>
-            <div className={styles.navIcon}>📅</div>
+            <div className={styles.navIcon}>
+              <ClipboardChartIcon size={30} />
+            </div>
             <ChevronRightIcon color="var(--k-30)" />
           </div>
           <div>
@@ -126,7 +126,9 @@ export function Home() {
 
         <div className={`${styles.navCard} ${styles.disabled}`}>
           <div className={styles.navIconRow}>
-            <div className={styles.navIcon}>🎓</div>
+            <div className={styles.navIcon}>
+              <QuestionBubbleIcon size={30} />
+            </div>
           </div>
           <div>
             <div className={`h5 ${styles.navTitle}`}>튜토리얼</div>
@@ -136,7 +138,9 @@ export function Home() {
 
         <button className={styles.navCard} onClick={() => navigate('/reports/final')} disabled={!trial}>
           <div className={styles.navIconRow}>
-            <div className={styles.navIcon}>📊</div>
+            <div className={styles.navIcon}>
+              <FlaskIcon size={30} />
+            </div>
             <ChevronRightIcon color="var(--k-30)" />
           </div>
           <div>

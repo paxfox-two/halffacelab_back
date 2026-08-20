@@ -1,20 +1,27 @@
+import type { ReactNode } from 'react';
 import styles from './ReportHero.module.css';
+import { ClipboardChartIcon } from './Icon';
 
 export function ReportHero({
   eyebrow,
   title,
+  subtitle,
   desc,
+  icon,
 }: {
   eyebrow: string;
   title: string;
+  subtitle?: string;
   desc: string[];
+  icon?: ReactNode;
 }) {
   return (
     <div className={styles.hero}>
       <div className={styles.left}>
         <div>
-          <div className={styles.eyebrow}>{eyebrow}</div>
+          {eyebrow && <div className={styles.eyebrow}>{eyebrow}</div>}
           <div className={styles.title}>{title}</div>
+          {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
         </div>
         <div className={styles.desc}>
           {desc.map((line, i) => (
@@ -23,8 +30,7 @@ export function ReportHero({
         </div>
       </div>
       <div className={styles.mark} aria-hidden>
-        <span />
-        <span />
+        {icon ?? <ClipboardChartIcon size={44} />}
       </div>
     </div>
   );
