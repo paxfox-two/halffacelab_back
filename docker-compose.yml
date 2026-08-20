@@ -1,7 +1,8 @@
-# Local/reference full-stack setup. Requires Docker (this sandbox doesn't
-# have it, so it was developed and verified against a rootless local
-# Postgres instead — see .devdb/README.md — but this file is what a
-# machine with Docker should use).
+# Full-stack deploy: postgres + migrate + backend + caddy (serves the
+# frontend and reverse-proxies /api to backend, with automatic HTTPS).
+# This is what both the temporary GCP box and the later Gabia move run —
+# see DEPLOY.md. (This sandbox has no Docker, so day-to-day dev here used
+# a rootless local Postgres instead — see backend/.devdb/README.md.)
 services:
   postgres:
     image: postgres:15-alpine
@@ -11,7 +12,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-halfface_dev_pw}
       POSTGRES_DB: ${POSTGRES_DB:-halfface_lab}
     ports:
-      - '5432:5432'
+      # Loopback-only — see the note on backend's port below. Nothing
+      # outside this VM needs to reach Postgres directly.
+      - '127.0.0.1:5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -38,17 +41,43 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-halfface}:${POSTGRES_PASSWORD:-halfface_dev_pw}@postgres:5432/${POSTGRES_DB:-halfface_lab}
       JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-in-production}
-      JWT_EXPIRES_IN: 1h
+      # No login screen in the frontend — it silently registers/reuses a
+      # guest account and expects the token to outlive the session, so
+      # this is long-lived rather than a typical short access token.
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-720h}
       PORT: 3000
       NODE_ENV: production
     ports:
-      - '3000:3000'
+      # Loopback-only: reachable from the host (SSH + curl for debugging)
+      # but not from the internet, even if the cloud firewall is
+      # misconfigured. Public traffic goes through caddy on 80/443.
+      - '127.0.0.1:3000:3000'
     depends_on:
       migrate:
         condition: service_completed_successfully
     # docker compose up --scale backend=3 works as-is: the app is
     # stateless and each replica opens its own bounded Prisma pool.
-    # Put a reverse proxy / load balancer in front for real scale-out.
+    # caddy in front load-balances across replicas automatically.
+
+  # Serves the built frontend and reverse-proxies /api/* to backend, both
+  # from one image (see frontend/Dockerfile) — and gets automatic
+  # Let's Encrypt HTTPS for $DOMAIN for free, including a nip.io hostname
+  # for a domain-less temporary deploy. See DEPLOY.md.
+  caddy:
+    build: ./frontend
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env — e.g. a nip.io hostname or your real domain}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
 
 volumes:
   pgdata:
+  caddy_data:
+  caddy_config:

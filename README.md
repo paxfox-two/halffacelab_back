@@ -43,8 +43,13 @@ design/     Figma에서 내보낸 SVG 원본 (참고용, git 미추적, ~28MB)
 - 제품 사진으로 이름을 자동 인식하는 OCR — 사진은 첨부만 되고, 이름은 항상 직접 입력하거나 검색해서 채운다 (화면에도 그렇게 안내)
 - 미백(BRIGHTNESS)·잡티 지표 — 백엔드에 비활성 상태로 남아있고, 화면에도 비활성 탭으로만 표시. 가짜 수치로 채우지 않는다
 
+## 배포
+
+`docker compose up -d --build` 한 번으로 postgres + backend + (프론트엔드를 서빙하며 `/api`를 리버스 프록시하고 자동 HTTPS까지 처리하는) caddy가 뜬다 — GCP든 Gabia든 Docker 되는 VM이면 동일하게 동작한다. 임시로 GCP에 올렸다가 나중에 Gabia로 옮기는 절차는 **`DEPLOY.md`** 참고.
+
 ## 문서
 
 - `backend/README.md` — API, 스키마, 비즈니스 규칙, 확장성 메모
 - `frontend/README.md` — 프론트 스택, 폴더 구조, 얼굴 분석 파이프라인 상세
+- `DEPLOY.md` — GCP 임시 배포 → Gabia 이전 절차
 - `halffacelab-api-endpoints.csv`, `mvp_erd.mermaid`, `mvp_schema.sql` — 초기 설계 참고 문서

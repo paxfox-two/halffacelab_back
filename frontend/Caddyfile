@@ -1,0 +1,16 @@
+{$DOMAIN} {
+	encode gzip
+
+	# Same-origin API — no CORS needed, matches how the SPA calls /api/v1/...
+	handle /api/* {
+		reverse_proxy backend:3000
+	}
+
+	# SPA fallback: any other path that isn't a real static file serves
+	# index.html so React Router's client-side routes work on refresh/deep link.
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}
