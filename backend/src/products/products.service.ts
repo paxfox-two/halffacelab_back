@@ -39,8 +39,21 @@ export class ProductsService {
   // migration; ILIKE '%term%' + similarity() ranking both benefit from it.
   async search(q: string, limit: number, offset: number) {
     const term = `%${q}%`;
+    // Alias every column back to the camelCase shape Prisma's own query
+    // builder returns (findMany etc.) — a plain `SELECT *` here would leak
+    // raw snake_case column names to API consumers instead.
     const items = await this.prisma.$queryRaw<Array<Record<string, unknown>>>`
-      SELECT *,
+      SELECT
+        id,
+        brand_name AS "brandName",
+        name,
+        category,
+        image_url AS "imageUrl",
+        source,
+        created_by_user_id AS "createdByUserId",
+        is_verified AS "isVerified",
+        created_at AS "createdAt",
+        updated_at AS "updatedAt",
         similarity(coalesce(brand_name, '') || ' ' || name, ${q}) AS rank
       FROM products
       WHERE (coalesce(brand_name, '') || ' ' || name) ILIKE ${term}

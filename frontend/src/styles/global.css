@@ -1,0 +1,104 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+@import './tokens.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--gs-70);
+  font-family: var(--font-brand);
+  color: var(--gs-90);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  max-width: var(--screen-max-width);
+  margin: 0 auto;
+  background: var(--gs-10);
+  min-height: 100%;
+  position: relative;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.3);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.h1 {
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+}
+.h2 {
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-bold);
+}
+.h3 {
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-bold);
+}
+.h4 {
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-medium);
+}
+.h5 {
+  font-size: var(--fs-h5);
+  font-weight: var(--fw-bold);
+}
+.h6 {
+  font-size: var(--fs-h6);
+  font-weight: var(--fw-medium);
+}
+.b1 {
+  font-size: var(--fs-b1);
+  font-weight: var(--fw-bold);
+}
+.b2 {
+  font-size: var(--fs-b2);
+  font-weight: var(--fw-medium);
+}
+.b3 {
+  font-size: var(--fs-b3);
+  font-weight: var(--fw-bold);
+}
+.b4 {
+  font-size: var(--fs-b4);
+  font-weight: var(--fw-medium);
+}
+.c1 {
+  font-size: var(--fs-c1);
+  font-weight: var(--fw-bold);
+}
+.c2 {
+  font-size: var(--fs-c2);
+  font-weight: var(--fw-medium);
+}

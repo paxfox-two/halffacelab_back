@@ -1,0 +1,70 @@
+/* Design tokens extracted from Figma "디자인 시스템" page (fileKey 8SieiOWyHF7LKPX7eUymo3) */
+:root {
+  /* Grayscale */
+  --gs-00: #ffffff;
+  --gs-10: #f4f4f4;
+  --gs-20: #c6c6c6;
+  --gs-30: #aeaeb2;
+  --gs-40: #8e8e93;
+  --gs-50: #636366;
+  --gs-60: #48484a;
+  --gs-70: #363639;
+  --gs-80: #2c2c2e;
+  --gs-90: #1c1c1e;
+  --gs-100: #000000;
+
+  /* Key color (brand purple) */
+  --k-00: #f4f2f7;
+  --k-10: #eae6f0;
+  --k-20: #c1b8d5;
+  --k-30: #6a5e87;
+  --k-40: #2e1959;
+
+  /* Blue */
+  --b-00: #0f62fe;
+  --b-10: #0f56db;
+  --b-20: #0847bd;
+
+  /* Green (good / positive) */
+  --g-00: #34c759;
+  --g-10: #22a343;
+  --g-20: #0e753b;
+
+  /* Red (warning / negative) */
+  --r-00: #da1e28;
+  --r-10: #ba1b23;
+  --r-20: #750e13;
+
+  /* Typography */
+  --font-brand:
+    'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic',
+    'Noto Sans KR', sans-serif;
+
+  --fs-h1: 32px;
+  --fs-h2: 24px;
+  --fs-h3: 18px;
+  --fs-h4: 18px;
+  --fs-a1: 18px;
+  --fs-h5: 16px;
+  --fs-h6: 16px;
+  --fs-b1: 14px;
+  --fs-b2: 14px;
+  --fs-b3: 12px;
+  --fs-b4: 12px;
+  --fs-c1: 10px;
+  --fs-c2: 10px;
+
+  --fw-medium: 500;
+  --fw-bold: 700;
+
+  /* Layout */
+  --radius-card: 8px;
+  --radius-pill: 20px;
+  --screen-max-width: 402px;
+  --shadow-card:
+    0px 0px 0.5px rgba(0, 0, 0, 0), 0px 0px 0.5px rgba(0, 0, 0, 0.01),
+    0px 0px 0.5px rgba(0, 0, 0, 0.05), 0px 0px 1.5px rgba(0, 0, 0, 0.09);
+  --shadow-card-lg:
+    0px 0px 1px rgba(0, 0, 0, 0), 0px 0px 1px rgba(0, 0, 0, 0.01),
+    0px 0px 1px rgba(0, 0, 0, 0.05), 0px 0px 3px rgba(0, 0, 0, 0.09);
+}

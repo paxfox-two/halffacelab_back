@@ -74,7 +74,7 @@ npm run test        # 유닛 테스트 (현재 없음, --passWithNoTests)
 
 - **무상태**: JWT만 사용, 서버 세션 없음 — 컨테이너를 몇 개든 띄워 로드밸런서 뒤에 둘 수 있음
 - **커넥션 풀**: Prisma가 인스턴스별로 풀을 관리. 여러 레플리카를 띄우는 배포에서는 PgBouncer(트랜잭션 풀링)를 Postgres 앞단에 두어 인스턴스별 풀이 DB 커넥션 한도를 합쳐서 소진하지 않도록 할 것
-- **무거운 연산은 비동기로**: 베이지안 N-of-1 리포트 분석(`POST /trials/:id/report/generate`)은 요청 스레드에서 바로 계산하지 않고 `trial_reports.status=QUEUED`만 쓰고 즉시 응답. 실제 분석은 별도 워커가 처리하도록 설계 — 다음 단계에서 BullMQ+Redis 등으로 워커를 붙이면 API 레이어와 독립적으로 스케일 가능
+- **리포트 분석**: `POST /trials/:id/report/generate`는 현재 paired-difference(평균±95% CI) 통계를 요청 스레드에서 동기 계산해 `status=DONE`까지 바로 응답한다(MVP 범위, 계산량이 가벼움). 더 무거운 모델(베이지안 N-of-1 등)로 바꿀 경우 `trial_reports.status=QUEUED`만 쓰고 즉시 응답한 뒤 별도 워커(BullMQ+Redis 등)가 처리하도록 다시 분리할 것 — 스키마는 이미 그 분리를 염두에 두고 설계되어 있음
 - **페이지네이션**: 모든 목록 API가 `limit/offset` 지원. `measurements`처럼 행이 많이 쌓이는 리소스는 추후 커서 기반(keyset) 페이지네이션으로 전환 고려
 - **검색**: `products.search`는 `pg_trgm` GIN 인덱스를 타는 raw SQL 사용. 트래픽이 커지면 Redis 캐시 또는 읽기 복제본으로 분리 가능하도록 서비스 레이어에 격리되어 있음
 - **레이트리밋**: `@nestjs/throttler` 전역 100req/min, 로그인은 5req/min으로 별도 제한

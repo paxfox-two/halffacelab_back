@@ -1,0 +1,44 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-pill);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  height: 40px;
+  padding: 0 16px;
+  font-size: var(--fs-h6);
+}
+
+.small {
+  height: 28px;
+  padding: 0 12px;
+  font-size: var(--fs-b3);
+  gap: 0;
+}
+
+.primary {
+  background: var(--gs-00);
+  color: var(--gs-90);
+  box-shadow: var(--shadow-card);
+}
+.secondary {
+  background: var(--k-40);
+  color: var(--gs-00);
+}
+.disabled {
+  background: var(--gs-00);
+  color: var(--gs-30);
+  box-shadow: var(--shadow-card);
+}
+.good {
+  background: var(--gs-00);
+  color: var(--g-10);
+  box-shadow: var(--shadow-card);
+}
+.warning {
+  background: var(--gs-00);
+  color: var(--r-10);
+  box-shadow: var(--shadow-card);
+}

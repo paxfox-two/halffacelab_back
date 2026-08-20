@@ -138,17 +138,19 @@ describe('Halfface Lab API (e2e)', () => {
     expect(second.status).toBe(409);
   });
 
-  it('queues a report and exposes it via the trial report endpoint', async () => {
+  it('computes a report synchronously and exposes it via the trial report endpoint', async () => {
     const generate = await request(app.getHttpServer())
       .post(`/api/v1/trials/${trialId}/report/generate`)
       .set('Authorization', `Bearer ${token}`);
     expect(generate.status).toBe(201);
-    expect(generate.body.status).toBe('QUEUED');
+    expect(generate.body.status).toBe('DONE');
+    expect(generate.body.results).toHaveLength(1);
+    expect(generate.body.results[0].nObservations).toBeGreaterThan(0);
 
     const report = await request(app.getHttpServer())
       .get(`/api/v1/trials/${trialId}/report`)
       .set('Authorization', `Bearer ${token}`);
     expect(report.status).toBe(200);
-    expect(report.body.status).toBe('QUEUED');
+    expect(report.body.status).toBe('DONE');
   });
 });

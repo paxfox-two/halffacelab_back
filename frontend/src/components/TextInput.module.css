@@ -1,0 +1,58 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.labelRow {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  font-size: var(--fs-h6);
+  font-weight: var(--fw-bold);
+  color: var(--gs-90);
+}
+
+.required {
+  color: var(--r-10);
+}
+
+.help {
+  font-size: var(--fs-b4);
+  color: var(--gs-70);
+  line-height: 1.5;
+}
+
+.input {
+  width: 100%;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--k-20);
+  padding: 10.5px 12px;
+  font-size: var(--fs-h6);
+  font-weight: var(--fw-medium);
+  color: var(--gs-90);
+  background: var(--gs-00);
+}
+
+.input::placeholder {
+  color: var(--gs-20);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--b-10);
+}
+
+.input.filled {
+  border-color: var(--k-40);
+}
+
+.input.error {
+  border-color: var(--r-00);
+}
+
+.errorText {
+  font-size: var(--fs-c1);
+  color: var(--r-00);
+}

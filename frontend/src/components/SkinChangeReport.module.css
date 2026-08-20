@@ -1,0 +1,23 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.sectionTitle {
+  color: var(--gs-90);
+}
+
+.chartCards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chartCard {
+  background: var(--gs-00);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card-lg);
+  padding: 16px 11px;
+}

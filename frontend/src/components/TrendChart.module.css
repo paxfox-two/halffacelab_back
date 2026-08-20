@@ -1,0 +1,70 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.headerRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.title {
+  font-size: var(--fs-h5);
+  font-weight: var(--fw-bold);
+  color: var(--gs-90);
+}
+
+.latest {
+  font-size: var(--fs-b2);
+  color: var(--k-40);
+  font-weight: var(--fw-bold);
+}
+
+.svgWrap {
+  position: relative;
+  width: 100%;
+}
+
+.empty {
+  color: var(--gs-40);
+  font-size: var(--fs-b4);
+  padding: 24px 0;
+  text-align: center;
+  width: 100%;
+}
+
+.legend {
+  display: flex;
+  gap: 12px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-b4);
+  color: var(--gs-70);
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: var(--gs-90);
+  color: var(--gs-00);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+}

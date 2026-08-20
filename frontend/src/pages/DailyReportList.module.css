@@ -1,0 +1,50 @@
+.body {
+  padding: 20px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.groupLabel {
+  color: var(--k-30);
+  font-size: var(--fs-b4);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  background: var(--gs-00);
+  border-radius: var(--radius-card);
+  padding: 16px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rowTitle {
+  color: var(--gs-70);
+  font-size: var(--fs-h6);
+  font-weight: var(--fw-bold);
+}
+
+.rowRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty {
+  color: var(--gs-40);
+  text-align: center;
+  padding: 40px 0;
+}

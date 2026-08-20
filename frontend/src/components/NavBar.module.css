@@ -1,0 +1,30 @@
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--gs-00);
+  border-bottom: 1px solid var(--gs-60);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13.5px 8px;
+}
+
+.side {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gs-90);
+}
+
+.title {
+  font-size: var(--fs-a1);
+  font-weight: var(--fw-bold);
+  color: var(--gs-60);
+  text-align: center;
+}

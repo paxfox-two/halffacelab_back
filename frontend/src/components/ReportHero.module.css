@@ -1,0 +1,52 @@
+.hero {
+  background: linear-gradient(to bottom, #eae6f0, #d8c9ee);
+  border-radius: var(--radius-card);
+  padding: 20px 19px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 132px;
+}
+
+.eyebrow {
+  color: var(--k-40);
+  font-size: var(--fs-b1);
+}
+
+.title {
+  color: var(--k-40);
+  font-size: var(--fs-h2);
+}
+
+.desc {
+  color: var(--gs-70);
+  font-size: var(--fs-h6);
+  line-height: 1.4;
+}
+
+.mark {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(46, 25, 89, 0.25);
+}
+.mark span:first-child {
+  flex: 1;
+  background: var(--k-40);
+}
+.mark span:last-child {
+  flex: 1;
+  background: var(--gs-00);
+}

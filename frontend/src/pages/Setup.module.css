@@ -1,0 +1,140 @@
+.page {
+  padding-bottom: 100px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 16px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sectionTitle {
+  color: var(--gs-90);
+}
+
+.sectionDesc {
+  color: var(--gs-70);
+  font-size: var(--fs-b2);
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  background: var(--gs-00);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cardHeaderRow {
+  display: flex;
+  gap: 2px;
+  align-items: baseline;
+  font-size: var(--fs-h6);
+  font-weight: var(--fw-bold);
+  color: var(--gs-100);
+}
+
+.required {
+  color: var(--r-10);
+}
+
+.cardHelp {
+  font-size: var(--fs-b4);
+  color: var(--gs-70);
+  line-height: 1.5;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 8px;
+}
+
+.buttonRow > * {
+  flex: 1;
+}
+
+.fieldLabel {
+  font-size: var(--fs-b2);
+  font-weight: var(--fw-bold);
+  color: var(--gs-50);
+}
+
+.timeRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.timeGroup {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  align-items: end;
+}
+
+.select {
+  flex: 1;
+  min-width: 0;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--k-20);
+  padding: 10.5px 12px;
+  font-size: var(--fs-h6);
+  color: var(--gs-90);
+  background: var(--gs-00);
+}
+
+.unit {
+  color: var(--gs-50);
+  font-size: var(--fs-h6);
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--screen-max-width);
+  padding: 16px;
+  background: linear-gradient(to top, var(--gs-10) 60%, transparent);
+}
+
+.photoPreview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.photoPreview img {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.error {
+  color: var(--r-00);
+  font-size: var(--fs-b4);
+  padding: 0 16px;
+}

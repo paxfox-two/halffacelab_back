@@ -1,0 +1,158 @@
+.page {
+  padding: 55px 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.greeting {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.logoMark {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-card);
+}
+.logoMark span {
+  flex: 1;
+}
+.logoMark span:first-child {
+  background: var(--k-40);
+}
+.logoMark span:last-child {
+  background: var(--gs-00);
+}
+
+.bubble {
+  background: var(--gs-00);
+  border-radius: 20px 20px 20px 0;
+  padding: 10.5px 16px;
+  font-size: var(--fs-h6);
+  color: var(--gs-70);
+}
+
+.mainCard {
+  background: var(--gs-00);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 22px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subtitle {
+  color: var(--k-30);
+  font-size: var(--fs-b2);
+  font-weight: var(--fw-medium);
+}
+
+.statsRow {
+  display: flex;
+  align-items: center;
+}
+
+.statCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.statValue {
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-bold);
+  color: var(--gs-90);
+}
+
+.statUnit {
+  font-size: var(--fs-h6);
+  font-weight: var(--fw-bold);
+  color: var(--gs-30);
+}
+
+.statLabel {
+  font-size: var(--fs-b4);
+  color: var(--gs-50);
+}
+
+.divider {
+  height: 1px;
+  background: var(--gs-20);
+}
+
+.navCards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.navCard {
+  background: var(--gs-00);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.navCard.disabled {
+  opacity: 0.55;
+}
+
+.navIconRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.navIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: var(--k-00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.navTitle {
+  font-size: var(--fs-h5);
+  color: var(--gs-90);
+}
+
+.navDesc {
+  font-size: var(--fs-b4);
+  color: var(--gs-50);
+}
+
+.emptyCard {
+  background: var(--gs-00);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}

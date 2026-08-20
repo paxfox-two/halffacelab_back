@@ -1,0 +1,146 @@
+.page {
+  position: fixed;
+  inset: 0;
+  max-width: var(--screen-max-width);
+  margin: 0 auto;
+  background: #000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.hiddenCanvas {
+  display: none;
+}
+
+.overlayTop {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 12px;
+}
+
+.instruction {
+  background: rgba(46, 25, 89, 0.75);
+  width: 100%;
+  padding: 24px 40px;
+  text-align: center;
+  color: var(--gs-00);
+  font-size: var(--fs-h4);
+}
+
+.tagRow {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.hint {
+  background: rgba(54, 54, 57, 0.5);
+  color: var(--gs-00);
+  font-size: var(--fs-b4);
+  font-weight: var(--fw-bold);
+  padding: 4px 8px;
+  border-radius: 10px;
+}
+
+.guideRow {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 6px;
+  z-index: 1;
+}
+
+.guideOval {
+  width: 130px;
+  height: 175px;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  border-radius: 50% / 55%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 10px;
+}
+
+.guideOval span {
+  color: var(--gs-00);
+  font-size: var(--fs-h4);
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+}
+
+.shutterWrap {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 40px;
+  margin-top: auto;
+}
+
+.shutter {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--gs-00);
+  border: 4px solid rgba(255, 255, 255, 0.5);
+}
+
+.shutter:disabled {
+  opacity: 0.4;
+}
+
+.navRow {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+}
+
+.navBtn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gs-00);
+}
+
+.navTitle {
+  color: var(--gs-00);
+  font-size: var(--fs-a1);
+  font-weight: var(--fw-bold);
+}
+
+.error {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.85);
+  color: var(--gs-00);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}

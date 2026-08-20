@@ -1,0 +1,73 @@
+.card {
+  background: var(--gs-00);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 16px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-h6);
+  font-weight: var(--fw-bold);
+}
+
+.headerLeft {
+  color: var(--gs-50);
+}
+
+.headerRight {
+  color: var(--b-00);
+}
+
+.table {
+  border: 2px solid var(--gs-20);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: stretch;
+}
+
+.row + .row {
+  border-top: 2px solid var(--gs-20);
+}
+
+.cellLeft {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 0;
+  font-size: var(--fs-h6);
+  color: var(--gs-40);
+}
+
+.cellLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--k-00);
+  color: var(--k-40);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-h6);
+  border-left: 2px solid var(--gs-20);
+  border-right: 2px solid var(--gs-20);
+}
+
+.cellRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 0;
+  font-size: var(--fs-h6);
+  color: var(--b-00);
+  font-weight: var(--fw-medium);
+}

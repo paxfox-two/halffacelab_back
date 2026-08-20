@@ -1,5 +1,5 @@
 import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsOptional, IsString, IsUrl, Length } from 'class-validator';
+import { IsIn, IsOptional, IsString, Length, Matches } from 'class-validator';
 
 const CATEGORIES = [
   'TONER',
@@ -27,8 +27,14 @@ export class CreateProductDto {
   @IsIn(CATEGORIES)
   category?: string;
 
+  // Accepts either a real URL or a data: URI (client photo capture has no
+  // object storage to upload to in this MVP, so it sends the image inline).
   @ApiPropertyOptional()
   @IsOptional()
-  @IsUrl()
+  @IsString()
+  @Matches(/^(https?:\/\/|data:image\/)/, {
+    message: 'imageUrl must be an http(s) URL or a data:image/... URI',
+  })
+  @Length(1, 2_000_000)
   imageUrl?: string;
 }

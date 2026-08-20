@@ -1,0 +1,17 @@
+.body {
+  padding: 20px 16px 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--screen-max-width);
+  padding: 16px;
+  background: linear-gradient(to top, var(--gs-10) 65%, transparent);
+}

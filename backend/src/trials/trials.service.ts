@@ -108,7 +108,7 @@ export class TrialsService {
         take: limit,
         skip: offset,
         orderBy: { createdAt: 'desc' },
-        include: { arms: true, primaryMetric: true },
+        include: { arms: { include: { product: true } }, primaryMetric: true },
       }),
       this.prisma.trial.count({ where: { userId } }),
     ]);
@@ -132,7 +132,7 @@ export class TrialsService {
     await this.assertOwnedTrial(userId, trialId);
     return this.prisma.trial.findUnique({
       where: { id: trialId },
-      include: { arms: true, primaryMetric: true },
+      include: { arms: { include: { product: true } }, primaryMetric: true },
     });
   }
 
