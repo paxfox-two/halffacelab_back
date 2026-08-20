@@ -131,6 +131,18 @@
   height: 48px;
   border-radius: 6px;
   object-fit: cover;
+  flex-shrink: 0;
+}
+
+.ocrNotice {
+  font-size: var(--fs-b4);
+  color: var(--k-30);
+}
+
+.ocrCaption {
+  font-size: var(--fs-c1);
+  color: var(--gs-40);
+  line-height: 1.5;
 }
 
 .error {

@@ -58,31 +58,36 @@
   border-radius: 10px;
 }
 
-.guideRow {
+.guideCircle {
   position: absolute;
-  top: 46%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  display: flex;
-  gap: 6px;
-  z-index: 1;
-}
-
-.guideOval {
-  width: 130px;
-  height: 175px;
+  width: 78%;
+  aspect-ratio: 1;
+  border-radius: 50%;
   border: 3px solid rgba(255, 255, 255, 0.85);
-  border-radius: 50% / 55%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 10px;
+  z-index: 1;
+  pointer-events: none;
 }
 
-.guideOval span {
-  color: var(--gs-00);
-  font-size: var(--fs-h4);
-  text-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+.regionSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.regionLabel {
+  fill: var(--gs-00);
+  font-size: 15px;
+  font-weight: 500;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(0, 0, 0, 0.45);
+  stroke-width: 3px;
 }
 
 .shutterWrap {

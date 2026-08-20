@@ -50,10 +50,7 @@ function ProductSlotCard({
   const navigate = useNavigate();
   const setup = useSetup();
   const fileRef = useRef<HTMLInputElement>(null);
-  const product = slot === 'test' ? setup.testProduct : setup.controlProduct;
-  const photo = slot === 'test' ? setup.testPhoto : setup.controlPhoto;
-  const [manualName, setManualName] = useState('');
-  const [manualBrand, setManualBrand] = useState('');
+  const { name, photo } = setup[slot];
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -61,8 +58,6 @@ function ProductSlotCard({
     const dataUrl = await fileToDataUrl(file);
     setup.setPhoto(slot, dataUrl);
   };
-
-  const displayValue = product ? `${product.brandName ? product.brandName + ' · ' : ''}${product.name}` : '';
 
   return (
     <div className={styles.card}>
@@ -77,31 +72,16 @@ function ProductSlotCard({
         </div>
       </div>
 
-      <TextInput placeholder={label} readOnly value={displayValue} />
+      <TextInput
+        placeholder="제품명을 입력하거나 검색해 주세요"
+        value={name}
+        onChange={(e) => setup.setName(slot, e.target.value)}
+      />
 
-      {photo && !product && (
+      {photo && (
         <div className={styles.photoPreview}>
           <img src={photo} alt="첨부한 제품 사진" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
-            <TextInput
-              placeholder="제품명을 입력하세요"
-              value={manualName}
-              onChange={(e) => {
-                setManualName(e.target.value);
-                if (slot === 'test') setup.setField('testManualName', e.target.value);
-                else setup.setField('controlManualName', e.target.value);
-              }}
-            />
-            <TextInput
-              placeholder="브랜드명 (선택)"
-              value={manualBrand}
-              onChange={(e) => {
-                setManualBrand(e.target.value);
-                if (slot === 'test') setup.setField('testManualBrand', e.target.value);
-                else setup.setField('controlManualBrand', e.target.value);
-              }}
-            />
-          </div>
+          <span className={styles.ocrNotice}>사진이 첨부되었어요. 위 칸에 제품명을 직접 입력해 주세요.</span>
         </div>
       )}
 
@@ -121,23 +101,21 @@ function ProductSlotCard({
           onChange={handleFile}
         />
       </div>
+      <span className={styles.ocrCaption}>
+        ※ 촬영 사진은 참고용으로만 저장돼요. 제품명 자동 인식(OCR)은 아직 지원하지 않아, 이름은 위 칸에 직접
+        입력해야 해요.
+      </span>
     </div>
   );
 }
 
-async function resolveProduct(
-  chosen: Product | null,
-  photo: string | null,
-  manualName: string,
-  manualBrand: string,
-): Promise<Product> {
-  if (chosen) return chosen;
-  if (!manualName.trim()) {
+async function resolveProduct(name: string, linkedProduct: Product | null, photo: string | null): Promise<Product> {
+  if (linkedProduct) return linkedProduct;
+  if (!name.trim()) {
     throw new Error('제품명을 입력해 주세요.');
   }
   return api.post<Product>('/products', {
-    name: manualName.trim(),
-    brandName: manualBrand.trim() || undefined,
+    name: name.trim(),
     imageUrl: photo ?? undefined,
   });
 }
@@ -151,12 +129,12 @@ export function Setup() {
 
   const handleSubmit = async () => {
     setError(null);
-    if (!setup.testProduct && !setup.testPhoto) {
-      setError('측정할 제품을 검색하거나 사진을 첨부해 주세요.');
+    if (!setup.test.name.trim()) {
+      setError('측정할 제품명을 입력하거나 검색해 주세요.');
       return;
     }
-    if (!setup.controlProduct && !setup.controlPhoto) {
-      setError('기존 제품을 검색하거나 사진을 첨부해 주세요.');
+    if (!setup.control.name.trim()) {
+      setError('기존 제품명을 입력하거나 검색해 주세요.');
       return;
     }
     const start = new Date(setup.startDate + 'T00:00:00');
@@ -175,8 +153,8 @@ export function Setup() {
     setSubmitting(true);
     try {
       const [testProduct, controlProduct] = await Promise.all([
-        resolveProduct(setup.testProduct, setup.testPhoto, setup.testManualName, setup.testManualBrand),
-        resolveProduct(setup.controlProduct, setup.controlPhoto, setup.controlManualName, setup.controlManualBrand),
+        resolveProduct(setup.test.name, setup.test.linkedProduct, setup.test.photo),
+        resolveProduct(setup.control.name, setup.control.linkedProduct, setup.control.photo),
       ]);
 
       const trial = await api.post<Trial>('/trials', {

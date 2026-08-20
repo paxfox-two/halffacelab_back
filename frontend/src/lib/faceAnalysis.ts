@@ -47,10 +47,13 @@ export type CheekSample = {
   rect: { x: number; y: number; w: number; h: number };
 };
 
+export type Rect = { x: number; y: number; w: number; h: number };
+
 export type FrameAnalysis = {
   quality: QualityCheck;
   cheeks: CheekSample[] | null;
   midlineX: number | null;
+  regions: { left: Rect; right: Rect } | null;
 };
 
 type Point = { x: number; y: number };
@@ -125,6 +128,7 @@ export async function analyzeFrame(
       quality: { lighting, frontal: 'poor', distance: 'too_far', faceDetected: false, brightness },
       cheeks: null,
       midlineX: null,
+      regions: null,
     };
   }
 
@@ -160,23 +164,32 @@ export async function analyzeFrame(
 
   const quality: QualityCheck = { lighting, frontal, distance, faceDetected: true, brightness };
 
-  if (!sampleCheeks) {
-    return { quality, cheeks: null, midlineX: midline.x };
-  }
-
+  // Cheap geometry, computed every frame so the live guide overlay can
+  // show exactly the regions that will be sampled — not a decorative
+  // placeholder.
   const bandTop = eyeY + (mouthY - eyeY) * 0.18;
   const bandBottom = mouthY - (mouthY - eyeY) * 0.08;
   const bandHeight = Math.max(4, bandBottom - bandTop);
   const inset = faceWidth * 0.15;
   const gap = faceWidth * 0.06;
 
-  const leftRect = { x: minX + inset, y: bandTop, w: Math.max(4, midline.x - gap - (minX + inset)), h: bandHeight };
-  const rightRect = {
+  const leftRect: Rect = {
+    x: minX + inset,
+    y: bandTop,
+    w: Math.max(4, midline.x - gap - (minX + inset)),
+    h: bandHeight,
+  };
+  const rightRect: Rect = {
     x: midline.x + gap,
     y: bandTop,
     w: Math.max(4, maxX - inset - (midline.x + gap)),
     h: bandHeight,
   };
+  const regions = { left: leftRect, right: rightRect };
+
+  if (!sampleCheeks) {
+    return { quality, cheeks: null, midlineX: midline.x, regions };
+  }
 
   const cheeks: CheekSample[] = [leftRect, rightRect].map((rect, i) => {
     const { r, g, b, count } = sampleRect(ctx, rect.x, rect.y, rect.w, rect.h);
@@ -194,5 +207,5 @@ export async function analyzeFrame(
     };
   });
 
-  return { quality, cheeks, midlineX: midline.x };
+  return { quality, cheeks, midlineX: midline.x, regions };
 }

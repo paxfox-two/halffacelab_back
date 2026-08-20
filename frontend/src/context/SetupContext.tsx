@@ -3,15 +3,15 @@ import type { Product } from '../lib/types';
 
 export type ProductSlot = 'test' | 'control';
 
+type SlotState = {
+  name: string;
+  linkedProduct: Product | null; // set when chosen via search; cleared once the user edits the name
+  photo: string | null; // data URL — supplementary only, OCR isn't implemented
+};
+
 type SetupState = {
-  testProduct: Product | null;
-  controlProduct: Product | null;
-  testPhoto: string | null; // data URL, manual-entry fallback for the "촬영하기" flow
-  controlPhoto: string | null;
-  testManualName: string;
-  testManualBrand: string;
-  controlManualName: string;
-  controlManualBrand: string;
+  test: SlotState;
+  control: SlotState;
   startDate: string;
   endDate: string;
   hour: string;
@@ -19,9 +19,10 @@ type SetupState = {
 };
 
 type SetupContextValue = SetupState & {
+  setName: (slot: ProductSlot, name: string) => void;
   setProduct: (slot: ProductSlot, product: Product) => void;
   setPhoto: (slot: ProductSlot, dataUrl: string | null) => void;
-  setField: <K extends keyof SetupState>(key: K, value: SetupState[K]) => void;
+  setField: <K extends keyof Omit<SetupState, 'test' | 'control'>>(key: K, value: SetupState[K]) => void;
   reset: () => void;
 };
 
@@ -33,37 +34,45 @@ function defaultDates() {
   return { startDate: fmt(start), endDate: fmt(end) };
 }
 
-const initialState: SetupState = {
-  testProduct: null,
-  controlProduct: null,
-  testPhoto: null,
-  controlPhoto: null,
-  testManualName: '',
-  testManualBrand: '',
-  controlManualName: '',
-  controlManualBrand: '',
-  ...defaultDates(),
-  hour: '',
-  minute: '',
-};
+const emptySlot = (): SlotState => ({ name: '', linkedProduct: null, photo: null });
+
+function initialState(): SetupState {
+  return {
+    test: emptySlot(),
+    control: emptySlot(),
+    ...defaultDates(),
+    hour: '',
+    minute: '',
+  };
+}
 
 const SetupContext = createContext<SetupContextValue | null>(null);
 
 export function SetupProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SetupState>(initialState);
 
+  const setName = (slot: ProductSlot, name: string) =>
+    setState((s) => ({ ...s, [slot]: { ...s[slot], name, linkedProduct: null } }));
+
   const setProduct = (slot: ProductSlot, product: Product) =>
-    setState((s) => ({ ...s, [slot === 'test' ? 'testProduct' : 'controlProduct']: product }));
+    setState((s) => ({
+      ...s,
+      [slot]: {
+        ...s[slot],
+        linkedProduct: product,
+        name: product.brandName ? `${product.brandName} · ${product.name}` : product.name,
+      },
+    }));
 
   const setPhoto = (slot: ProductSlot, dataUrl: string | null) =>
-    setState((s) => ({ ...s, [slot === 'test' ? 'testPhoto' : 'controlPhoto']: dataUrl }));
+    setState((s) => ({ ...s, [slot]: { ...s[slot], photo: dataUrl } }));
 
   const setField: SetupContextValue['setField'] = (key, value) => setState((s) => ({ ...s, [key]: value }));
 
-  const reset = () => setState({ ...initialState, ...defaultDates() });
+  const reset = () => setState(initialState());
 
   return (
-    <SetupContext.Provider value={{ ...state, setProduct, setPhoto, setField, reset }}>
+    <SetupContext.Provider value={{ ...state, setName, setProduct, setPhoto, setField, reset }}>
       {children}
     </SetupContext.Provider>
   );

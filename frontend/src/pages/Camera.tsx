@@ -4,9 +4,36 @@ import styles from './Camera.module.css';
 import { Tag } from '../components/Tag';
 import { ChevronLeftIcon, CloseIcon, LightIcon, FaceIcon, DistanceIcon } from '../components/Icon';
 import { useTrial } from '../context/TrialContext';
-import { analyzeFrame, type CheekSample, type QualityCheck } from '../lib/faceAnalysis';
+import { analyzeFrame, type CheekSample, type QualityCheck, type Rect } from '../lib/faceAnalysis';
 
 const CONSECUTIVE_GOOD_NEEDED = 4;
+
+type ScreenTransform = { scale: number; offsetX: number; offsetY: number; width: number; height: number };
+
+// The <video> is rendered with object-fit: cover, so a point in the
+// video's native pixel space needs this same scale+crop mapping applied
+// to land in the right place on screen — used to draw the live cheek
+// sampling regions in sync with what analyzeFrame actually measures.
+function videoToScreenTransform(video: HTMLVideoElement): ScreenTransform | null {
+  const cw = video.clientWidth;
+  const ch = video.clientHeight;
+  const vw = video.videoWidth;
+  const vh = video.videoHeight;
+  if (!cw || !ch || !vw || !vh) return null;
+  const scale = Math.max(cw / vw, ch / vh);
+  const offsetX = (cw - vw * scale) / 2;
+  const offsetY = (ch - vh * scale) / 2;
+  return { scale, offsetX, offsetY, width: cw, height: ch };
+}
+
+function mapRect(rect: Rect, t: ScreenTransform) {
+  return {
+    x: rect.x * t.scale + t.offsetX,
+    y: rect.y * t.scale + t.offsetY,
+    w: rect.w * t.scale,
+    h: rect.h * t.scale,
+  };
+}
 
 export function Camera() {
   const navigate = useNavigate();
@@ -17,6 +44,7 @@ export function Camera() {
   const capturedRef = useRef(false);
 
   const [quality, setQuality] = useState<QualityCheck | null>(null);
+  const [regions, setRegions] = useState<{ left: Rect; right: Rect } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -66,6 +94,7 @@ export function Camera() {
         try {
           const result = await analyzeFrame(video, canvas, { sampleCheeks: false });
           setQuality(result.quality);
+          setRegions(result.regions);
           const allGood =
             result.quality.faceDetected && result.quality.lighting === 'good' && result.quality.frontal === 'good' && result.quality.distance === 'good';
           goodStreakRef.current = allGood ? goodStreakRef.current + 1 : 0;
@@ -113,10 +142,12 @@ export function Camera() {
   if (!trial) return null;
 
   const controlArm = trial.arms.find((a) => a.role === 'CONTROL');
-  const testArm = trial.arms.find((a) => a.role === 'TEST');
   const leftLabel = controlArm?.side === 'LEFT' ? '기존' : '신규';
   const rightLabel = controlArm?.side === 'LEFT' ? '신규' : '기존';
-  void testArm;
+
+  const transform = videoRef.current ? videoToScreenTransform(videoRef.current) : null;
+  const screenLeft = regions && transform ? mapRect(regions.left, transform) : null;
+  const screenRight = regions && transform ? mapRect(regions.right, transform) : null;
 
   return (
     <div className={styles.page}>
@@ -149,14 +180,40 @@ export function Camera() {
         <div className={styles.hint}>조건을 충족하면 자동으로 촬영됩니다</div>
       </div>
 
-      <div className={styles.guideRow}>
-        <div className={styles.guideOval}>
-          <span>{leftLabel}</span>
-        </div>
-        <div className={styles.guideOval}>
-          <span>{rightLabel}</span>
-        </div>
-      </div>
+      <div className={styles.guideCircle} />
+
+      {screenLeft && screenRight && transform && (
+        <svg className={styles.regionSvg} viewBox={`0 0 ${transform.width} ${transform.height}`}>
+          <line
+            x1={screenLeft.x + screenLeft.w}
+            y1={Math.min(screenLeft.y, screenRight.y) - 20}
+            x2={screenLeft.x + screenLeft.w}
+            y2={Math.max(screenLeft.y + screenLeft.h, screenRight.y + screenRight.h) + 20}
+            stroke="rgba(255,255,255,0.8)"
+            strokeDasharray="5 5"
+          />
+          <ellipse
+            cx={screenLeft.x + screenLeft.w / 2}
+            cy={screenLeft.y + screenLeft.h / 2}
+            rx={screenLeft.w / 2}
+            ry={screenLeft.h / 2 + 18}
+            fill="rgba(52,199,89,0.35)"
+          />
+          <text x={screenLeft.x + screenLeft.w / 2} y={screenLeft.y + screenLeft.h + 26} className={styles.regionLabel}>
+            {leftLabel}
+          </text>
+          <ellipse
+            cx={screenRight.x + screenRight.w / 2}
+            cy={screenRight.y + screenRight.h / 2}
+            rx={screenRight.w / 2}
+            ry={screenRight.h / 2 + 18}
+            fill="rgba(15,98,254,0.3)"
+          />
+          <text x={screenRight.x + screenRight.w / 2} y={screenRight.y + screenRight.h + 26} className={styles.regionLabel}>
+            {rightLabel}
+          </text>
+        </svg>
+      )}
 
       <div className={styles.shutterWrap}>
         <button className={styles.shutter} onClick={() => void capture()} disabled={!quality?.faceDetected} aria-label="촬영" />
