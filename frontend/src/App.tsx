@@ -10,6 +10,8 @@ import { DailyReportList } from './pages/DailyReportList';
 import { DailyReportDetail } from './pages/DailyReportDetail';
 import { FinalReportList } from './pages/FinalReportList';
 import { FinalReport } from './pages/FinalReport';
+import { TutorialList } from './pages/TutorialList';
+import { TutorialCarousel } from './pages/TutorialCarousel';
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
       <Route path="/reports/daily/:measurementId" element={<DailyReportDetail />} />
       <Route path="/reports/final" element={<FinalReportList />} />
       <Route path="/reports/final/:trialId" element={<FinalReport />} />
+      <Route path="/tutorial" element={<TutorialList />} />
+      <Route path="/tutorial/:category" element={<TutorialCarousel />} />
     </Routes>
   );
 }

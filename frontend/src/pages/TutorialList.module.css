@@ -1,0 +1,43 @@
+.body {
+  padding: 20px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.card {
+  background: var(--gs-00);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.topRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.iconBox {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--k-00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  color: var(--gs-90);
+}
+
+.desc {
+  color: var(--gs-50);
+  font-size: var(--fs-b4);
+  line-height: 1.4;
+}

@@ -95,7 +95,7 @@
   overflow: hidden;
 }
 
-.navCard.disabled {
+.navCard:disabled {
   opacity: 0.55;
 }
 

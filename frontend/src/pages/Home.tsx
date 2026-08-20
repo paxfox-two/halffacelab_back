@@ -124,17 +124,18 @@ export function Home() {
           </div>
         </button>
 
-        <div className={`${styles.navCard} ${styles.disabled}`}>
+        <button className={styles.navCard} onClick={() => navigate('/tutorial')}>
           <div className={styles.navIconRow}>
             <div className={styles.navIcon}>
               <QuestionBubbleIcon size={30} />
             </div>
+            <ChevronRightIcon color="var(--k-30)" />
           </div>
           <div>
             <div className={`h5 ${styles.navTitle}`}>튜토리얼</div>
-            <div className={styles.navDesc}>준비 중이에요</div>
+            <div className={styles.navDesc}>헷갈리는 테스트 과정을 다시 학습합니다</div>
           </div>
-        </div>
+        </button>
 
         <button className={styles.navCard} onClick={() => navigate('/reports/final')} disabled={!trial}>
           <div className={styles.navIconRow}>

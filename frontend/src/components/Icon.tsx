@@ -161,6 +161,32 @@ export function QuestionBubbleIcon({ size = 32, color = 'var(--k-40)', className
   );
 }
 
+export function TubeIcon({ size = 32, color = 'var(--k-40)', className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" className={className}>
+      <path
+        d="M12 4h8l1 3-2 3v15a3 3 0 01-3 3h-0a3 3 0 01-3-3V10l-2-3 1-3z"
+        fill="white"
+        stroke={color}
+        strokeWidth={1.6}
+        strokeLinejoin="round"
+      />
+      <path d="M10.5 15.5h11" stroke={color} strokeWidth={1.6} />
+      <path d="M13 7h6" stroke={color} strokeWidth={1.4} strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function PhoneIcon({ size = 32, color = 'var(--k-40)', className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" className={className}>
+      <rect x="9" y="3" width="14" height="26" rx="3" fill="white" stroke={color} strokeWidth={1.6} />
+      <path d="M14 6h4" stroke={color} strokeWidth={1.6} strokeLinecap="round" />
+      <circle cx="16" cy="25" r="1.3" fill={color} />
+    </svg>
+  );
+}
+
 export function AsteriskIcon({ size = 16, color = '#0F62FE', className }: IconProps) {
   // A 4-point sparkle, matching design/Icon.svg's "as" (unchanged/no-direction) icon.
   return (
